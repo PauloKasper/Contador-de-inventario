@@ -9,8 +9,10 @@
     <!-- Leitor de QR Code -->
     <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
 
-    <style>
+    <!-- Gerador de QR Code -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 
+    <style>
         * {
             box-sizing: border-box;
         }
@@ -223,29 +225,6 @@
             color: #155724;
         }
 
-        .estado {
-            display: inline-block;
-            padding: 5px 10px;
-            border-radius: 15px;
-            font-size: 12px;
-            font-weight: bold;
-        }
-
-        .estado-enviado {
-            background: #fff3cd;
-            color: #856404;
-        }
-
-        .estado-validado {
-            background: #d4edda;
-            color: #155724;
-        }
-
-        .estado-pendente {
-            background: #e2e3e5;
-            color: #383d41;
-        }
-
         .campo-chefe {
             margin-bottom: 15px;
         }
@@ -256,7 +235,8 @@
             margin-bottom: 6px;
         }
 
-        .input-text {
+        .input-text,
+        select {
             width: 100%;
             padding: 10px;
             font-size: 16px;
@@ -284,8 +264,22 @@
             font-size: 22px;
         }
 
-        @media (max-width: 600px) {
+        #area-qrcode {
+            text-align: center;
+            margin: 20px 0;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            background: #f8f9fa;
+        }
 
+        #qrcode {
+            display: flex;
+            justify-content: center;
+            margin: 20px;
+        }
+
+        @media (max-width: 600px) {
             body {
                 padding: 8px;
             }
@@ -307,9 +301,7 @@
                 padding: 8px;
                 font-size: 13px;
             }
-
         }
-
     </style>
 </head>
 
@@ -317,9 +309,7 @@
 
 <div class="container">
 
-    <!-- =====================================================
-         MENU PRINCIPAL
-         ===================================================== -->
+    <!-- MENU -->
 
     <div id="secao-menu" class="secao ativa">
 
@@ -331,17 +321,13 @@
 
         <div class="menu">
 
-            <button
-                class="btn btn-primary"
-                onclick="abrirFuncionario()"
-            >
+            <button class="btn btn-primary"
+                    onclick="abrirFuncionario()">
                 👷 Funcionário
             </button>
 
-            <button
-                class="btn btn-danger"
-                onclick="abrirChefe()"
-            >
+            <button class="btn btn-danger"
+                    onclick="abrirChefe()">
                 👨‍💼 Chefe
             </button>
 
@@ -350,44 +336,34 @@
     </div>
 
 
-    <!-- =====================================================
-         FUNCIONÁRIO
-         ===================================================== -->
+    <!-- FUNCIONÁRIO -->
 
     <div id="secao-funcionario" class="secao">
 
         <h2>👷 Contagem de Inventário</h2>
 
-        <div
-            id="fase-leitura"
-            class="camera-box"
-        >
+        <div id="fase-leitura" class="camera-box">
 
-            <h3>Leia o QR Code da rua</h3>
+            <h3>Leia o QR Code</h3>
 
             <p>
-                Aponte a câmera para o QR Code
-                correspondente à rua.
+                Aponte a câmera para o QR Code fornecido pelo chefe.
             </p>
 
             <div id="reader"></div>
 
-            <div
-                id="mensagem-funcionario"
-                class="mensagem"
-            ></div>
+            <div id="mensagem-funcionario"
+                 class="mensagem">
+            </div>
 
         </div>
 
 
-        <div
-            id="fase-contagem"
-            style="display:none;"
-        >
+        <div id="fase-contagem" style="display:none;">
 
             <div class="info-rua">
 
-                <strong>Rua:</strong>
+                <strong>Localização:</strong>
 
                 <span id="nome-rua-atual">
                     -
@@ -396,9 +372,9 @@
             </div>
 
             <p>
-                Introduza apenas a quantidade
-                que encontrou fisicamente.
+                Introduza apenas a quantidade que encontrou fisicamente.
             </p>
+
 
             <div class="tabela-container">
 
@@ -406,19 +382,19 @@
 
                     <thead>
 
-                        <tr>
+                    <tr>
 
-                            <th>Localização</th>
+                        <th>Localização</th>
 
-                            <th>Artigo</th>
+                        <th>Artigo</th>
 
-                            <th>Descrição</th>
+                        <th>Descrição</th>
 
-                            <th style="text-align:center;">
-                                Contagem
-                            </th>
+                        <th style="text-align:center;">
+                            Contagem
+                        </th>
 
-                        </tr>
+                    </tr>
 
                     </thead>
 
@@ -428,28 +404,28 @@
 
             </div>
 
-            <button
-                id="btn-finalizar"
-                class="btn btn-success"
-                onclick="finalizarContagem()"
-            >
+
+            <button id="btn-finalizar"
+                    class="btn btn-success"
+                    onclick="finalizarContagem()">
+
                 🔒 Finalizar Contagem
+
             </button>
 
-            <button
-                class="btn btn-secondary"
-                onclick="voltarMenu()"
-            >
+
+            <button class="btn btn-secondary"
+                    onclick="voltarMenu()">
+
                 Voltar
+
             </button>
 
         </div>
 
 
-        <div
-            id="estado-finalizado"
-            class="estado-finalizado"
-        >
+        <div id="estado-finalizado"
+             class="estado-finalizado">
 
             <strong>
                 🔒 Contagem finalizada
@@ -460,11 +436,11 @@
 
             <br><br>
 
-            <button
-                class="btn btn-secondary"
-                onclick="voltarMenu()"
-            >
+            <button class="btn btn-secondary"
+                    onclick="voltarMenu()">
+
                 Voltar ao início
+
             </button>
 
         </div>
@@ -472,9 +448,7 @@
     </div>
 
 
-    <!-- =====================================================
-         CHEFE
-         ===================================================== -->
+    <!-- CHEFE -->
 
     <div id="secao-chefe" class="secao">
 
@@ -482,38 +456,124 @@
             👨‍💼 Painel do Chefe
         </h2>
 
+
+        <!-- CARREGAR CSV -->
+
         <div class="campo-chefe">
 
             <label>
-                Rua a validar
+                1. Carregar o ficheiro CSV do inventário
             </label>
 
-            <input
-                type="text"
-                id="nome-rua-chefe"
-                class="input-text"
-                placeholder="Exemplo: rua01"
-            >
+            <input type="file"
+                   id="ficheiro-csv-chefe"
+                   accept=".csv,text/csv"
+                   class="input-text">
+
+            <p style="font-size:13px;">
+                O ficheiro é lido neste navegador.
+            </p>
 
         </div>
 
-        <button
-            class="btn btn-primary"
-            onclick="carregarAuditoria()"
-        >
-            🔄 Carregar Contagem
+
+        <!-- LOCALIZAÇÃO -->
+
+        <div class="campo-chefe">
+
+            <label>
+                2. Escolher a localização
+            </label>
+
+            <select id="localizacao-chefe"
+                    class="input-text">
+
+                <option value="">
+                    Primeiro carregue o CSV
+                </option>
+
+            </select>
+
+        </div>
+
+
+        <!-- GERAR QR -->
+
+        <button class="btn btn-primary"
+                onclick="gerarQRCodeContagem()">
+
+            🔲 Gerar QR Code da Contagem
+
         </button>
 
 
-        <div
-            id="painel-auditoria"
-            style="display:none;"
-        >
+        <div id="area-qrcode"
+             style="display:none;">
+
+            <h3>
+                QR Code para o funcionário
+            </h3>
+
+            <p>
+                O funcionário deve abrir o site,
+                escolher <b>Funcionário</b>
+                e ler este QR.
+            </p>
+
+            <div id="qrcode"></div>
+
+            <div id="texto-qrcode"
+                 class="mensagem aviso"
+                 style="display:block;">
+            </div>
+
+            <button class="btn btn-secondary"
+                    onclick="imprimirQRCode()">
+
+                🖨️ Imprimir QR Code
+
+            </button>
+
+        </div>
+
+
+        <!-- AUDITORIA -->
+
+        <hr>
+
+        <h3>
+            Auditoria
+        </h3>
+
+        <div class="campo-chefe">
+
+            <label>
+                Contagem recebida
+            </label>
+
+            <input type="text"
+                   id="nome-rua-chefe"
+                   class="input-text"
+                   placeholder="Identificação da contagem">
+
+        </div>
+
+
+        <button class="btn btn-primary"
+                onclick="carregarAuditoria()">
+
+            🔄 Carregar Contagem
+
+        </button>
+
+
+        <div id="painel-auditoria"
+             style="display:none;">
 
             <div class="info-rua">
 
                 <strong>
-                    Rua:
+                    Contagem:
                 </strong>
 
                 <span id="rua-auditoria">
@@ -535,6 +595,7 @@
 
                 </div>
 
+
                 <div class="cartao">
 
                     <span>Divergências</span>
@@ -544,6 +605,7 @@
                     </strong>
 
                 </div>
+
 
                 <div class="cartao">
 
@@ -558,12 +620,12 @@
             </div>
 
 
-            <button
-                id="btn-varredura"
-                class="btn btn-warning"
-                onclick="executarVarredura()"
-            >
+            <button id="btn-varredura"
+                    class="btn btn-warning"
+                    onclick="executarVarredura()">
+
                 🔍 Executar Varredura de Divergências
+
             </button>
 
 
@@ -573,25 +635,25 @@
 
                     <thead>
 
-                        <tr>
+                    <tr>
 
-                            <th>Artigo</th>
+                        <th>Artigo</th>
 
-                            <th>Descrição</th>
+                        <th>Descrição</th>
 
-                            <th style="text-align:center;">
-                                Stock Sistema
-                            </th>
+                        <th style="text-align:center;">
+                            Stock Sistema
+                        </th>
 
-                            <th style="text-align:center;">
-                                Contagem Real
-                            </th>
+                        <th style="text-align:center;">
+                            Contagem Real
+                        </th>
 
-                            <th style="text-align:center;">
-                                Divergência
-                            </th>
+                        <th style="text-align:center;">
+                            Divergência
+                        </th>
 
-                        </tr>
+                    </tr>
 
                     </thead>
 
@@ -602,33 +664,33 @@
             </div>
 
 
-            <button
-                id="btn-validar"
-                class="btn btn-success"
-                onclick="validarAuditoria()"
-                style="display:none;"
-            >
+            <button id="btn-validar"
+                    class="btn btn-success"
+                    onclick="validarAuditoria()"
+                    style="display:none;">
+
                 ✅ Validar Contagem
+
             </button>
 
 
-            <button
-                id="btn-eliminar"
-                class="btn btn-danger"
-                onclick="eliminarResultado()"
-                style="display:none;"
-            >
+            <button id="btn-eliminar"
+                    class="btn btn-danger"
+                    onclick="eliminarResultado()"
+                    style="display:none;">
+
                 🗑️ Excluir Resultado
+
             </button>
 
         </div>
 
 
-        <button
-            class="btn btn-secondary"
-            onclick="voltarMenu()"
-        >
+        <button class="btn btn-secondary"
+                onclick="voltarMenu()">
+
             Voltar
+
         </button>
 
     </div>
@@ -638,262 +700,251 @@
 
 <script>
 
-    /*
-    ============================================================
-    CONFIGURAÇÃO
-    ============================================================
-    */
+/*
+============================================================
+CONFIGURAÇÃO
+============================================================
+*/
 
-    const URL_DADOS = "./dados/";
-
-
-    /*
-    ============================================================
-    VARIÁVEIS FUNCIONÁRIO
-    ============================================================
-    */
-
-    let dadosDaRua = [];
-
-    let identificadorRua = "";
-
-    let arquivoRua = "";
-
-    let leitorQR = null;
+const URL_DADOS = "./dados/";
 
 
-    /*
-    ============================================================
-    VARIÁVEIS CHEFE
-    ============================================================
-    */
+/*
+============================================================
+VARIÁVEIS
+============================================================
+*/
 
-    let dadosAuditoria = [];
+let dadosDaRua = [];
 
-    let ruaAuditoriaAtual = "";
+let identificadorRua = "";
 
-    let stockOriginal = [];
+let arquivoRua = "";
 
+let leitorQR = null;
 
-    /*
-    ============================================================
-    MENU
-    ============================================================
-    */
+let dadosAuditoria = [];
 
-    function abrirFuncionario() {
+let ruaAuditoriaAtual = "";
 
-        esconderTodasSecoes();
+let stockOriginal = [];
 
-        document
-            .getElementById("secao-funcionario")
-            .classList.add("ativa");
+let csvChefeCompleto = "";
 
-        iniciarLeitorQR();
+let dadosCSVChefe = [];
 
-    }
+let locaisDisponiveis = [];
 
 
-    function abrirChefe() {
+/*
+============================================================
+MENU
+============================================================
+*/
 
-        esconderTodasSecoes();
+function abrirFuncionario() {
 
-        document
-            .getElementById("secao-chefe")
-            .classList.add("ativa");
+    esconderTodasSecoes();
 
-    }
+    document
+        .getElementById("secao-funcionario")
+        .classList.add("ativa");
 
+    identificadorRua = "";
 
-    function voltarMenu() {
+    dadosDaRua = [];
 
-        if (leitorQR) {
+    document
+        .getElementById("fase-leitura")
+        .style.display = "block";
 
-            try {
-                leitorQR.stop();
-            } catch (e) {}
+    document
+        .getElementById("fase-contagem")
+        .style.display = "none";
 
-            leitorQR = null;
+    document
+        .getElementById("estado-finalizado")
+        .style.display = "none";
 
-        }
-
-        esconderTodasSecoes();
-
-        document
-            .getElementById("secao-menu")
-            .classList.add("ativa");
-
-    }
+    iniciarLeitorQR();
+}
 
 
-    function esconderTodasSecoes() {
+function abrirChefe() {
 
-        document
-            .querySelectorAll(".secao")
-            .forEach(function(secao) {
+    esconderTodasSecoes();
 
-                secao.classList.remove("ativa");
+    document
+        .getElementById("secao-chefe")
+        .classList.add("ativa");
 
-            });
+}
+
+
+function voltarMenu() {
+
+    if (leitorQR) {
+
+        try {
+            leitorQR.stop();
+        } catch (e) {}
+
+        leitorQR = null;
 
     }
 
+    esconderTodasSecoes();
 
-    /*
-    ============================================================
-    QR CODE
-    ============================================================
-    */
+    document
+        .getElementById("secao-menu")
+        .classList.add("ativa");
 
-    function iniciarLeitorQR() {
-
-        const reader =
-            document.getElementById("reader");
-
-        reader.innerHTML = "";
-
-        leitorQR =
-            new Html5Qrcode("reader");
+}
 
 
-        leitorQR.start(
+function esconderTodasSecoes() {
 
-            {
-                facingMode: "environment"
-            },
+    document
+        .querySelectorAll(".secao")
+        .forEach(function(secao) {
 
-            {
-                fps: 10,
-                qrbox: {
-                    width: 250,
-                    height: 250
-                }
-            },
-
-            qrCodeSucesso,
-
-            function() {}
-
-        ).catch(function(erro) {
-
-            mostrarMensagemFuncionario(
-                "Não foi possível abrir a câmera. " +
-                "Verifique a permissão da câmera.",
-                "erro"
-            );
+            secao.classList.remove("ativa");
 
         });
 
-    }
+}
 
 
-    /*
-    ============================================================
-    QR CODE SUCESSO
-    ============================================================
-    */
+/*
+============================================================
+LEITOR QR
+============================================================
+*/
 
-    async function qrCodeSucesso(textoQR) {
+function iniciarLeitorQR() {
 
-        if (identificadorRua !== "") {
-            return;
-        }
+    const reader =
+        document.getElementById("reader");
 
+    reader.innerHTML = "";
 
-        const resultado =
-            textoQR.match(
-                /RUA\s*=\s*(.+)/i
-            );
+    leitorQR =
+        new Html5Qrcode("reader");
 
 
-        if (!resultado) {
+    leitorQR.start(
 
-            mostrarMensagemFuncionario(
-                "QR Code inválido. " +
-                "Use o formato RUA=RUA01.",
-                "erro"
-            );
+        {
+            facingMode: "environment"
+        },
 
-            return;
+        {
+            fps: 10,
 
-        }
+            qrbox: {
+                width: 250,
+                height: 250
+            }
+        },
 
+        qrCodeSucesso,
 
-        identificadorRua =
-            resultado[1].trim();
+        function() {}
 
+    ).catch(function(erro) {
 
-        arquivoRua =
-            identificadorRua
-                .toLowerCase()
-                .replace(/\s+/g, "_")
-                .replace(/[^a-z0-9_-]/g, "")
-                + ".csv";
-
-
-        try {
-
-            await leitorQR.stop();
-
-        } catch (e) {}
-
-
-        await carregarCSVFuncionario();
-
-    }
-
-
-    /*
-    ============================================================
-    CARREGAR CSV FUNCIONÁRIO
-    ============================================================
-    */
-
-    async function carregarCSVFuncionario() {
+        console.error(erro);
 
         mostrarMensagemFuncionario(
-            "A carregar os artigos...",
-            "aviso"
+
+            "Não foi possível abrir a câmera. " +
+            "Verifique a permissão da câmera.",
+
+            "erro"
+
         );
 
+    });
+
+}
+
+
+/*
+============================================================
+QR CODE LIDO
+============================================================
+*/
+
+async function qrCodeSucesso(textoQR) {
+
+    if (identificadorRua !== "") {
+        return;
+    }
+
+
+    /*
+    NOVO FORMATO:
+
+    INVENTARIO|1|BASE64_DO_CSV
+    */
+
+    if (textoQR.startsWith("INVENTARIO|1|")) {
 
         try {
 
-            const resposta =
-                await fetch(
-                    URL_DADOS +
-                    arquivoRua +
-                    "?t=" +
-                    Date.now()
+            const base64 =
+                textoQR.substring(
+                    "INVENTARIO|1|".length
                 );
 
 
-            if (!resposta.ok) {
-
-                throw new Error(
-                    "CSV não encontrado."
+            const textoCSV =
+                decodeURIComponent(
+                    escape(
+                        atob(base64)
+                    )
                 );
+
+
+            identificadorRua =
+                extrairLocalizacaoDoCSV(
+                    textoCSV
+                );
+
+
+            if (!identificadorRua) {
+
+                identificadorRua =
+                    "Contagem QR";
 
             }
 
 
-            const texto =
-                await resposta.text();
+            try {
+                await leitorQR.stop();
+            } catch (e) {}
 
 
             interpretarCSVFuncionario(
-                texto
+                textoCSV
             );
 
+
+            return;
 
         } catch (erro) {
 
             console.error(erro);
 
             mostrarMensagemFuncionario(
-                "Não foi possível carregar o CSV da rua.",
+
+                "O QR Code contém dados inválidos.",
+
                 "erro"
+
             );
+
+            return;
 
         }
 
@@ -901,1564 +952,2273 @@
 
 
     /*
-    ============================================================
-    INTERPRETAR CSV FUNCIONÁRIO
-    ============================================================
+    COMPATIBILIDADE COM RUA=RUA01
     */
 
-    function interpretarCSVFuncionario(textoCSV) {
-
-        const linhas =
-            textoCSV
-                .replace(/\r/g, "")
-                .split("\n")
-                .filter(
-                    linha =>
-                        linha.trim() !== ""
-                );
+    const resultado =
+        textoQR.match(
+            /RUA\s*=\s*(.+)/i
+        );
 
 
-        if (linhas.length < 2) {
+    if (!resultado) {
 
-            mostrarMensagemFuncionario(
-                "CSV vazio ou inválido.",
-                "erro"
-            );
+        mostrarMensagemFuncionario(
 
-            return;
+            "QR Code inválido. " +
+            "Use um QR gerado pelo painel do Chefe.",
 
-        }
+            "erro"
 
+        );
 
-        const separador =
-            detectarSeparador(linhas[0]);
-
-
-        const cabecalho =
-            separarCSV(
-                linhas[0],
-                separador
-            ).map(function(c) {
-
-                return c
-                    .trim()
-                    .toUpperCase();
-
-            });
-
-
-        const indiceLocalizacao =
-            cabecalho.indexOf("LOCALIZAÇÃO") !== -1
-                ? cabecalho.indexOf("LOCALIZAÇÃO")
-                : cabecalho.indexOf("LOCALIZACAO");
-
-
-        const indiceArtigo =
-            cabecalho.indexOf("ARTIGO");
-
-
-        const indiceDescricao =
-            cabecalho.indexOf("DESCRIÇÃO") !== -1
-                ? cabecalho.indexOf("DESCRIÇÃO")
-                : cabecalho.indexOf("DESCRICAO");
-
-
-        if (
-            indiceLocalizacao === -1 ||
-            indiceArtigo === -1 ||
-            indiceDescricao === -1
-        ) {
-
-            mostrarMensagemFuncionario(
-                "O CSV precisa ter LOCALIZAÇÃO, ARTIGO e DESCRIÇÃO.",
-                "erro"
-            );
-
-            return;
-
-        }
-
-
-        dadosDaRua = [];
-
-
-        for (
-            let i = 1;
-            i < linhas.length;
-            i++
-        ) {
-
-            const colunas =
-                separarCSV(
-                    linhas[i],
-                    separador
-                );
-
-
-            if (
-                colunas.length === 0
-            ) {
-                continue;
-            }
-
-
-            const localizacao =
-                limparCSV(
-                    colunas[indiceLocalizacao]
-                );
-
-
-            const artigo =
-                limparCSV(
-                    colunas[indiceArtigo]
-                );
-
-
-            const descricao =
-                limparCSV(
-                    colunas[indiceDescricao]
-                );
-
-
-            if (!artigo) {
-                continue;
-            }
-
-
-            /*
-                IMPORTANTE:
-
-                A coluna QUANTIDADE NÃO É GUARDADA
-                em dadosDaRua.
-
-                O funcionário nunca recebe esse valor.
-            */
-
-            dadosDaRua.push({
-
-                localizacao:
-                    localizacao,
-
-                artigo:
-                    artigo,
-
-                descricao:
-                    descricao
-
-            });
-
-        }
-
-
-        mostrarFormularioFuncionario();
+        return;
 
     }
 
 
-    /*
-    ============================================================
-    FORMULÁRIO FUNCIONÁRIO
-    ============================================================
-    */
-
-    function mostrarFormularioFuncionario() {
-
-        document
-            .getElementById("fase-leitura")
-            .style.display = "none";
+    identificadorRua =
+        resultado[1].trim();
 
 
-        document
-            .getElementById("fase-contagem")
-            .style.display = "block";
+    arquivoRua =
+        identificadorRua
+            .toLowerCase()
+            .replace(/\s+/g, "_")
+            .replace(/[^a-z0-9_-]/g, "")
+            + ".csv";
 
 
-        document
-            .getElementById("estado-finalizado")
-            .style.display = "none";
+    try {
+        await leitorQR.stop();
+    } catch (e) {}
 
 
-        document
-            .getElementById("nome-rua-atual")
-            .innerText =
-                identificadorRua;
+    await carregarCSVFuncionario();
+
+}
 
 
-        const tbody =
-            document.getElementById(
-                "linhas-produtos"
+/*
+============================================================
+EXTRAIR LOCALIZAÇÃO DO CSV
+============================================================
+*/
+
+function extrairLocalizacaoDoCSV(textoCSV) {
+
+    const linhas =
+        textoCSV
+            .replace(/\r/g, "")
+            .split("\n")
+            .filter(
+                linha => linha.trim() !== ""
             );
 
 
-        tbody.innerHTML = "";
+    if (linhas.length < 2) {
+        return "";
+    }
 
 
-        dadosDaRua.forEach(
-            function(item, index) {
-
-                const tr =
-                    document.createElement("tr");
-
-
-                tr.innerHTML = `
-
-                    <td>
-                        <b>
-                            ${escaparHTML(item.localizacao)}
-                        </b>
-                    </td>
-
-                    <td>
-                        ${escaparHTML(item.artigo)}
-                    </td>
-
-                    <td>
-                        ${escaparHTML(item.descricao)}
-                    </td>
-
-                    <td style="text-align:center;">
-
-                        <input
-                            type="number"
-                            class="input-qtd"
-                            id="qtd-${index}"
-                            min="0"
-                            step="1"
-                            inputmode="numeric"
-                            placeholder="0"
-                        >
-
-                    </td>
-
-                `;
+    const separador =
+        detectarSeparador(
+            linhas[0]
+        );
 
 
-                tbody.appendChild(tr);
+    const cabecalho =
+        separarCSV(
+            linhas[0],
+            separador
+        ).map(function(c) {
 
-            }
+            return c
+                .trim()
+                .toUpperCase();
+
+        });
+
+
+    const indiceLocalizacao =
+        cabecalho.indexOf("LOCALIZAÇÃO") !== -1
+            ? cabecalho.indexOf("LOCALIZAÇÃO")
+            : cabecalho.indexOf("LOCALIZACAO");
+
+
+    if (indiceLocalizacao === -1) {
+        return "";
+    }
+
+
+    const primeiraLinha =
+        separarCSV(
+            linhas[1],
+            separador
+        );
+
+
+    return limparCSV(
+        primeiraLinha[indiceLocalizacao]
+    );
+
+}
+
+
+/*
+============================================================
+CARREGAR CSV ANTIGO
+============================================================
+*/
+
+async function carregarCSVFuncionario() {
+
+    mostrarMensagemFuncionario(
+        "A carregar os artigos...",
+        "aviso"
+    );
+
+
+    try {
+
+        const resposta =
+            await fetch(
+
+                URL_DADOS +
+                arquivoRua +
+                "?t=" +
+                Date.now()
+
+            );
+
+
+        if (!resposta.ok) {
+
+            throw new Error(
+                "CSV não encontrado."
+            );
+
+        }
+
+
+        const texto =
+            await resposta.text();
+
+
+        interpretarCSVFuncionario(
+            texto
+        );
+
+
+    } catch (erro) {
+
+        console.error(erro);
+
+        mostrarMensagemFuncionario(
+
+            "Não foi possível carregar o CSV.",
+
+            "erro"
+
         );
 
     }
 
-
-    /*
-    ============================================================
-    FINALIZAR FUNCIONÁRIO
-    ============================================================
-    */
-
-    function finalizarContagem() {
-
-        for (
-            let i = 0;
-            i < dadosDaRua.length;
-            i++
-        ) {
-
-            const campo =
-                document.getElementById(
-                    `qtd-${i}`
-                );
+}
 
 
-            if (
-                campo.value === ""
-            ) {
+/*
+============================================================
+INTERPRETAR CSV FUNCIONÁRIO
+============================================================
+*/
 
-                alert(
-                    "Existe pelo menos um artigo sem contagem."
-                );
+function interpretarCSVFuncionario(textoCSV) {
 
-                campo.focus();
-
-                return;
-
-            }
-
-
-            const valor =
-                Number(campo.value);
-
-
-            if (
-                !Number.isInteger(valor) ||
-                valor < 0
-            ) {
-
-                alert(
-                    "As quantidades devem ser números inteiros."
-                );
-
-                campo.focus();
-
-                return;
-
-            }
-
-        }
-
-
-        const confirmar =
-            confirm(
-                "Tem certeza que deseja finalizar?\n\n" +
-                "Depois de finalizar, a contagem ficará bloqueada."
+    const linhas =
+        textoCSV
+            .replace(/\r/g, "")
+            .split("\n")
+            .filter(
+                linha =>
+                    linha.trim() !== ""
             );
 
 
-        if (!confirmar) {
-            return;
+    if (linhas.length < 2) {
+
+        mostrarMensagemFuncionario(
+
+            "CSV vazio ou inválido.",
+
+            "erro"
+
+        );
+
+        return;
+
+    }
+
+
+    const separador =
+        detectarSeparador(
+            linhas[0]
+        );
+
+
+    const cabecalho =
+        separarCSV(
+            linhas[0],
+            separador
+        ).map(function(c) {
+
+            return c
+                .trim()
+                .toUpperCase();
+
+        });
+
+
+    const indiceLocalizacao =
+        cabecalho.indexOf("LOCALIZAÇÃO") !== -1
+            ? cabecalho.indexOf("LOCALIZAÇÃO")
+            : cabecalho.indexOf("LOCALIZACAO");
+
+
+    const indiceArtigo =
+        cabecalho.indexOf("ARTIGO");
+
+
+    const indiceDescricao =
+        cabecalho.indexOf("DESCRIÇÃO") !== -1
+            ? cabecalho.indexOf("DESCRIÇÃO")
+            : cabecalho.indexOf("DESCRICAO");
+
+
+    if (
+
+        indiceLocalizacao === -1 ||
+        indiceArtigo === -1 ||
+        indiceDescricao === -1
+
+    ) {
+
+        mostrarMensagemFuncionario(
+
+            "O CSV precisa ter LOCALIZAÇÃO, ARTIGO e DESCRIÇÃO.",
+
+            "erro"
+
+        );
+
+        return;
+
+    }
+
+
+    dadosDaRua = [];
+
+
+    for (
+        let i = 1;
+        i < linhas.length;
+        i++
+    ) {
+
+        const colunas =
+            separarCSV(
+                linhas[i],
+                separador
+            );
+
+
+        if (!colunas.length) {
+            continue;
         }
 
 
-        const resultado =
-            criarCSVResultado();
+        const localizacao =
+            limparCSV(
+                colunas[indiceLocalizacao]
+            );
 
 
-        /*
-            Guarda o resultado localmente.
+        const artigo =
+            limparCSV(
+                colunas[indiceArtigo]
+            );
 
-            Na próxima etapa substituímos
-            esta parte pelo envio ao GitHub.
-        */
 
-        const chave =
-            "resultado_" +
+        const descricao =
+            limparCSV(
+                colunas[indiceDescricao]
+            );
+
+
+        if (!artigo) {
+            continue;
+        }
+
+
+        dadosDaRua.push({
+
+            localizacao:
+                localizacao,
+
+            artigo:
+                artigo,
+
+            descricao:
+                descricao
+
+        });
+
+    }
+
+
+    if (!dadosDaRua.length) {
+
+        mostrarMensagemFuncionario(
+
+            "Não foram encontrados artigos neste CSV.",
+
+            "erro"
+
+        );
+
+        return;
+
+    }
+
+
+    mostrarFormularioFuncionario();
+
+}
+
+
+/*
+============================================================
+FORMULÁRIO FUNCIONÁRIO
+============================================================
+*/
+
+function mostrarFormularioFuncionario() {
+
+    document
+        .getElementById("fase-leitura")
+        .style.display = "none";
+
+
+    document
+        .getElementById("fase-contagem")
+        .style.display = "block";
+
+
+    document
+        .getElementById("estado-finalizado")
+        .style.display = "none";
+
+
+    document
+        .getElementById("nome-rua-atual")
+        .innerText =
             identificadorRua;
 
 
-        localStorage.setItem(
-            chave,
-            JSON.stringify({
-
-                rua:
-                    identificadorRua,
-
-                data:
-                    new Date().toISOString(),
-
-                estado:
-                    "ENVIADO",
-
-                csv:
-                    resultado
-
-            })
+    const tbody =
+        document.getElementById(
+            "linhas-produtos"
         );
 
 
-        /*
-            Marca a rua como finalizada.
-        */
-
-        localStorage.setItem(
-
-            "finalizado_" +
-            identificadorRua,
-
-            "true"
-
-        );
+    tbody.innerHTML = "";
 
 
-        bloquearFormulario();
+    dadosDaRua.forEach(
+        function(item, index) {
+
+            const tr =
+                document.createElement(
+                    "tr"
+                );
 
 
-        baixarCSV(
-            resultado,
-            gerarNomeArquivoResultado()
-        );
+            tr.innerHTML = `
+
+                <td>
+                    <b>
+                        ${escaparHTML(item.localizacao)}
+                    </b>
+                </td>
+
+                <td>
+                    ${escaparHTML(item.artigo)}
+                </td>
+
+                <td>
+                    ${escaparHTML(item.descricao)}
+                </td>
+
+                <td style="text-align:center;">
+
+                    <input
+                        type="number"
+                        class="input-qtd"
+                        id="qtd-${index}"
+                        min="0"
+                        step="1"
+                        inputmode="numeric"
+                        placeholder="0"
+                    >
+
+                </td>
+
+            `;
 
 
-        document
-            .getElementById(
-                "estado-finalizado"
-            )
-            .style.display = "block";
-
-
-        alert(
-            "✅ Contagem finalizada.\n\n" +
-            "O resultado foi guardado."
-        );
-
-    }
-
-
-    /*
-    ============================================================
-    CRIAR CSV DE RESULTADO
-    ============================================================
-    */
-
-    function criarCSVResultado() {
-
-        let csv =
-            "LOCALIZAÇÃO;ARTIGO;DESCRIÇÃO;CONTAGEM\n";
-
-
-        dadosDaRua.forEach(
-            function(item, index) {
-
-                const campo =
-                    document.getElementById(
-                        `qtd-${index}`
-                    );
-
-
-                const quantidade =
-                    Number(campo.value);
-
-
-                csv +=
-
-                    '"' +
-                    escaparCSV(
-                        item.localizacao
-                    ) +
-                    '";"' +
-
-                    escaparCSV(
-                        item.artigo
-                    ) +
-                    '";"' +
-
-                    escaparCSV(
-                        item.descricao
-                    ) +
-                    '";' +
-
-                    quantidade +
-
-                    "\n";
-
-            }
-        );
-
-
-        return csv;
-
-    }
-
-
-    /*
-    ============================================================
-    BLOQUEAR FUNCIONÁRIO
-    ============================================================
-    */
-
-    function bloquearFormulario() {
-
-        document
-            .querySelectorAll(".input-qtd")
-            .forEach(function(campo) {
-
-                campo.disabled = true;
-
-            });
-
-
-        const botao =
-            document.getElementById(
-                "btn-finalizar"
-            );
-
-
-        botao.disabled = true;
-
-        botao.innerText =
-            "🔒 Contagem Finalizada";
-
-    }
-
-
-    /*
-    ============================================================
-    CHEFE — CARREGAR RESULTADO
-    ============================================================
-    */
-
-    function carregarAuditoria() {
-
-        const rua =
-            document
-                .getElementById(
-                    "nome-rua-chefe"
-                )
-                .value
-                .trim();
-
-
-        if (!rua) {
-
-            alert(
-                "Digite o nome da rua."
-            );
-
-            return;
+            tbody.appendChild(tr);
 
         }
+    );
+
+}
 
 
-        ruaAuditoriaAtual =
-            rua;
+/*
+============================================================
+FINALIZAR
+============================================================
+*/
 
+function finalizarContagem() {
 
-        const chave =
-            "resultado_" +
-            rua;
-
-
-        const resultadoSalvo =
-            localStorage.getItem(
-                chave
-            );
-
-
-        if (!resultadoSalvo) {
-
-            alert(
-                "Não existe uma contagem enviada para esta rua neste navegador."
-            );
-
-            return;
-
-        }
-
-
-        const dados =
-            JSON.parse(
-                resultadoSalvo
-            );
-
-
-        dadosAuditoria =
-            converterCSVResultado(
-                dados.csv
-            );
-
-
-        /*
-            Agora carregamos o CSV ORIGINAL
-            da mesma rua.
-
-            É ele que contém a quantidade
-            oficial do sistema.
-        */
-
-        carregarCSVOriginalChefe(
-            rua
-        );
-
-    }
-
-
-    /*
-    ============================================================
-    CARREGAR CSV ORIGINAL DO CHEFE
-    ============================================================
-    */
-
-    async function carregarCSVOriginalChefe(
-        rua
+    for (
+        let i = 0;
+        i < dadosDaRua.length;
+        i++
     ) {
 
-        const arquivo =
-            rua
-                .toLowerCase()
-                .replace(/\s+/g, "_")
-                .replace(/[^a-z0-9_-]/g, "")
-                + ".csv";
+        const campo =
+            document.getElementById(
+                `qtd-${i}`
+            );
 
 
-        try {
-
-            const resposta =
-                await fetch(
-                    URL_DADOS +
-                    arquivo +
-                    "?t=" +
-                    Date.now()
-                );
-
-
-            if (!resposta.ok) {
-
-                throw new Error();
-
-            }
-
-
-            const texto =
-                await resposta.text();
-
-
-            stockOriginal =
-                converterCSVOriginal(
-                    texto
-                );
-
-
-            mostrarPainelAuditoria();
-
-
-        } catch (erro) {
+        if (campo.value === "") {
 
             alert(
-                "Não foi possível carregar o CSV original da rua."
+                "Existe pelo menos um artigo sem contagem."
             );
+
+            campo.focus();
+
+            return;
+
+        }
+
+
+        const valor =
+            Number(campo.value);
+
+
+        if (
+            !Number.isInteger(valor) ||
+            valor < 0
+        ) {
+
+            alert(
+                "As quantidades devem ser números inteiros."
+            );
+
+            campo.focus();
+
+            return;
 
         }
 
     }
 
 
+    const confirmar =
+        confirm(
+
+            "Tem certeza que deseja finalizar?\n\n" +
+            "Depois de finalizar, a contagem ficará bloqueada."
+
+        );
+
+
+    if (!confirmar) {
+        return;
+    }
+
+
+    const resultado =
+        criarCSVResultado();
+
+
     /*
-    ============================================================
-    CONVERTER CSV ORIGINAL
-    ============================================================
+    GUARDA LOCALMENTE POR ENQUANTO.
+
+    O upload para o GitHub será feito
+    através de uma ponte segura, sem colocar
+    o token do GitHub neste HTML.
     */
 
-    function converterCSVOriginal(texto) {
-
-        const linhas =
-            texto
-                .replace(/\r/g, "")
-                .split("\n")
-                .filter(
-                    linha =>
-                        linha.trim() !== ""
-                );
+    const chave =
+        "resultado_" +
+        identificadorRua;
 
 
-        if (linhas.length < 2) {
-            return [];
-        }
+    localStorage.setItem(
+
+        chave,
+
+        JSON.stringify({
+
+            rua:
+                identificadorRua,
+
+            data:
+                new Date().toISOString(),
+
+            estado:
+                "ENVIADO",
+
+            csv:
+                resultado
+
+        })
+
+    );
 
 
-        const separador =
-            detectarSeparador(
-                linhas[0]
-            );
+    bloquearFormulario();
 
 
-        const cabecalho =
-            separarCSV(
-                linhas[0],
-                separador
-            ).map(function(c) {
+    baixarCSV(
 
-                return c
-                    .trim()
-                    .toUpperCase();
+        resultado,
 
-            });
+        gerarNomeArquivoResultado()
+
+    );
 
 
-        const idxArtigo =
-            cabecalho.indexOf("ARTIGO");
+    document
+        .getElementById(
+            "estado-finalizado"
+        )
+        .style.display =
+            "block";
 
 
-        const idxDescricao =
-            cabecalho.indexOf("DESCRIÇÃO") !== -1
-                ? cabecalho.indexOf("DESCRIÇÃO")
-                : cabecalho.indexOf("DESCRICAO");
+    alert(
+
+        "✅ Contagem finalizada.\n\n" +
+        "O resultado foi preparado e guardado."
+
+    );
+
+}
 
 
-        const idxQuantidade =
-            cabecalho.indexOf("QUANTIDADE");
+/*
+============================================================
+CRIAR CSV RESULTADO
+============================================================
+*/
+
+function criarCSVResultado() {
+
+    let csv =
+        "LOCALIZAÇÃO;ARTIGO;DESCRIÇÃO;CONTAGEM\n";
 
 
-        const resultado = [];
+    dadosDaRua.forEach(
+        function(item, index) {
 
-
-        for (
-            let i = 1;
-            i < linhas.length;
-            i++
-        ) {
-
-            const colunas =
-                separarCSV(
-                    linhas[i],
-                    separador
-                );
-
-
-            if (
-                idxArtigo === -1 ||
-                idxQuantidade === -1
-            ) {
-                continue;
-            }
-
-
-            const artigo =
-                limparCSV(
-                    colunas[idxArtigo]
-                );
-
-
-            const descricao =
-                limparCSV(
-                    colunas[idxDescricao]
+            const campo =
+                document.getElementById(
+                    `qtd-${index}`
                 );
 
 
             const quantidade =
                 Number(
-                    limparCSV(
-                        colunas[idxQuantidade]
-                    )
-                ) || 0;
-
-
-            resultado.push({
-
-                artigo:
-                    artigo,
-
-                descricao:
-                    descricao,
-
-                quantidade:
-                    quantidade
-
-            });
-
-        }
-
-
-        return resultado;
-
-    }
-
-
-    /*
-    ============================================================
-    CONVERTER CSV DE RESULTADO
-    ============================================================
-    */
-
-    function converterCSVResultado(
-        texto
-    ) {
-
-        const linhas =
-            texto
-                .replace(/\r/g, "")
-                .split("\n")
-                .filter(
-                    linha =>
-                        linha.trim() !== ""
+                    campo.value
                 );
 
 
-        if (linhas.length < 2) {
-            return [];
-        }
+            csv +=
 
+                '"' +
+                escaparCSV(
+                    item.localizacao
+                ) +
+                '";"' +
 
-        const separador =
-            detectarSeparador(
-                linhas[0]
-            );
+                escaparCSV(
+                    item.artigo
+                ) +
+                '";"' +
 
+                escaparCSV(
+                    item.descricao
+                ) +
+                '";' +
 
-        const resultado = [];
+                quantidade +
 
-
-        for (
-            let i = 1;
-            i < linhas.length;
-            i++
-        ) {
-
-            const colunas =
-                separarCSV(
-                    linhas[i],
-                    separador
-                );
-
-
-            if (
-                colunas.length < 4
-            ) {
-                continue;
-            }
-
-
-            resultado.push({
-
-                localizacao:
-                    limparCSV(colunas[0]),
-
-                artigo:
-                    limparCSV(colunas[1]),
-
-                descricao:
-                    limparCSV(colunas[2]),
-
-                qtdContada:
-                    Number(
-                        limparCSV(colunas[3])
-                    ) || 0
-
-            });
+                "\n";
 
         }
+    );
 
 
-        return resultado;
+    return csv;
 
-    }
-
-
-    /*
-    ============================================================
-    PAINEL CHEFE
-    ============================================================
-    */
-
-    function mostrarPainelAuditoria() {
-
-        document
-            .getElementById(
-                "painel-auditoria"
-            )
-            .style.display = "block";
+}
 
 
-        document
-            .getElementById(
-                "rua-auditoria"
-            )
-            .innerText =
-                ruaAuditoriaAtual;
+/*
+============================================================
+BLOQUEAR FORMULÁRIO
+============================================================
+*/
 
+function bloquearFormulario() {
 
-        document
-            .getElementById(
-                "total-artigos"
-            )
-            .innerText =
-                dadosAuditoria.length;
+    document
+        .querySelectorAll(".input-qtd")
+        .forEach(
+            function(campo) {
 
-
-        document
-            .getElementById(
-                "total-divergencias"
-            )
-            .innerText =
-                "-";
-
-
-        document
-            .getElementById(
-                "estado-auditoria"
-            )
-            .innerText =
-                "ENVIADO";
-
-
-        const tbody =
-            document.getElementById(
-                "linhas-auditoria"
-            );
-
-
-        tbody.innerHTML = "";
-
-
-        dadosAuditoria.forEach(
-            function(item, index) {
-
-                const tr =
-                    document.createElement(
-                        "tr"
-                    );
-
-
-                tr.id =
-                    "linha-auditoria-" +
-                    index;
-
-
-                tr.innerHTML = `
-
-                    <td>
-                        <b>
-                            ${escaparHTML(item.artigo)}
-                        </b>
-                    </td>
-
-                    <td>
-                        ${escaparHTML(item.descricao)}
-                    </td>
-
-                    <td
-                        style="
-                            text-align:center;
-                            color:#666;
-                        "
-                    >
-                        —
-                    </td>
-
-                    <td
-                        style="
-                            text-align:center;
-                            font-weight:bold;
-                        "
-                    >
-                        ${item.qtdContada}
-                    </td>
-
-                    <td
-                        style="
-                            text-align:center;
-                        "
-                    >
-                        —
-                    </td>
-
-                `;
-
-
-                tbody.appendChild(tr);
+                campo.disabled = true;
 
             }
         );
 
 
-        document
-            .getElementById(
-                "btn-varredura"
-            )
-            .style.display = "block";
+    const botao =
+        document.getElementById(
+            "btn-finalizar"
+        );
 
 
-        document
-            .getElementById(
-                "btn-validar"
-            )
-            .style.display = "none";
+    botao.disabled = true;
 
 
-        document
-            .getElementById(
-                "btn-eliminar"
-            )
-            .style.display = "none";
+    botao.innerText =
+        "🔒 Contagem Finalizada";
+
+}
+
+
+/*
+============================================================
+CHEFE — CARREGAR CSV
+============================================================
+*/
+
+document
+    .getElementById(
+        "ficheiro-csv-chefe"
+    )
+    .addEventListener(
+        "change",
+        function(event) {
+
+            const ficheiro =
+                event.target.files[0];
+
+
+            if (!ficheiro) {
+                return;
+            }
+
+
+            const leitor =
+                new FileReader();
+
+
+            leitor.onload =
+                function(e) {
+
+                    try {
+
+                        csvChefeCompleto =
+                            e.target.result;
+
+
+                        dadosCSVChefe =
+                            interpretarCSVParaChefe(
+                                csvChefeCompleto
+                            );
+
+
+                        if (
+                            !dadosCSVChefe.length
+                        ) {
+
+                            throw new Error(
+                                "CSV sem dados."
+                            );
+
+                        }
+
+
+                        locaisDisponiveis =
+                            [
+                                ...new Set(
+
+                                    dadosCSVChefe
+                                        .map(
+                                            item =>
+                                                item.localizacao
+                                        )
+                                        .filter(Boolean)
+
+                                )
+                            ];
+
+
+                        const select =
+                            document.getElementById(
+                                "localizacao-chefe"
+                            );
+
+
+                        select.innerHTML =
+                            '<option value="">Escolha uma localização</option>';
+
+
+                        locaisDisponiveis.forEach(
+                            function(local) {
+
+                                const option =
+                                    document.createElement(
+                                        "option"
+                                    );
+
+
+                                option.value =
+                                    local;
+
+
+                                option.textContent =
+                                    local;
+
+
+                                select.appendChild(
+                                    option
+                                );
+
+                            }
+                        );
+
+
+                        alert(
+
+                            "CSV carregado com sucesso.\n\n" +
+
+                            dadosCSVChefe.length +
+                            " artigos encontrados.\n" +
+
+                            locaisDisponiveis.length +
+                            " localizações encontradas."
+
+                        );
+
+
+                    } catch (erro) {
+
+                        console.error(
+                            erro
+                        );
+
+
+                        alert(
+
+                            "Não foi possível ler o CSV.\n\n" +
+
+                            "Confirme se existem as colunas:\n" +
+
+                            "Localização\n" +
+                            "Artigo\n" +
+                            "Descrição\n" +
+                            "Quantidade"
+
+                        );
+
+                    }
+
+                };
+
+
+            leitor.readAsText(
+                ficheiro,
+                "UTF-8"
+            );
+
+        }
+    );
+
+
+/*
+============================================================
+INTERPRETAR CSV CHEFE
+============================================================
+*/
+
+function interpretarCSVParaChefe(
+    textoCSV
+) {
+
+    const linhas =
+        textoCSV
+            .replace(/\r/g, "")
+            .split("\n")
+            .filter(
+                linha =>
+                    linha.trim() !== ""
+            );
+
+
+    if (linhas.length < 2) {
+        return [];
+    }
+
+
+    const separador =
+        detectarSeparador(
+            linhas[0]
+        );
+
+
+    const cabecalho =
+        separarCSV(
+            linhas[0],
+            separador
+        ).map(function(c) {
+
+            return c
+                .trim()
+                .toUpperCase();
+
+        });
+
+
+    const idxLocalizacao =
+        cabecalho.indexOf("LOCALIZAÇÃO") !== -1
+            ? cabecalho.indexOf("LOCALIZAÇÃO")
+            : cabecalho.indexOf("LOCALIZACAO");
+
+
+    const idxArtigo =
+        cabecalho.indexOf("ARTIGO");
+
+
+    const idxDescricao =
+        cabecalho.indexOf("DESCRIÇÃO") !== -1
+            ? cabecalho.indexOf("DESCRIÇÃO")
+            : cabecalho.indexOf("DESCRICAO");
+
+
+    const idxQuantidade =
+        cabecalho.indexOf("QUANTIDADE");
+
+
+    if (
+
+        idxLocalizacao === -1 ||
+        idxArtigo === -1 ||
+        idxDescricao === -1 ||
+        idxQuantidade === -1
+
+    ) {
+
+        return [];
 
     }
 
 
+    const resultado = [];
+
+
+    for (
+        let i = 1;
+        i < linhas.length;
+        i++
+    ) {
+
+        const colunas =
+            separarCSV(
+                linhas[i],
+                separador
+            );
+
+
+        if (!colunas.length) {
+            continue;
+        }
+
+
+        const localizacao =
+            limparCSV(
+                colunas[idxLocalizacao]
+            );
+
+
+        const artigo =
+            limparCSV(
+                colunas[idxArtigo]
+            );
+
+
+        const descricao =
+            limparCSV(
+                colunas[idxDescricao]
+            );
+
+
+        const quantidade =
+            Number(
+
+                limparCSV(
+                    colunas[idxQuantidade]
+                )
+                .replace(",", ".")
+
+            );
+
+
+        if (!artigo) {
+            continue;
+        }
+
+
+        resultado.push({
+
+            localizacao:
+                localizacao,
+
+            artigo:
+                artigo,
+
+            descricao:
+                descricao,
+
+            quantidade:
+                Number.isFinite(
+                    quantidade
+                )
+                    ? quantidade
+                    : 0
+
+        });
+
+    }
+
+
+    return resultado;
+
+}
+
+
+/*
+============================================================
+GERAR QR CODE
+============================================================
+*/
+
+function gerarQRCodeContagem() {
+
+    if (!dadosCSVChefe.length) {
+
+        alert(
+            "Primeiro carregue o CSV."
+        );
+
+        return;
+
+    }
+
+
+    const local =
+        document
+            .getElementById(
+                "localizacao-chefe"
+            )
+            .value;
+
+
+    if (!local) {
+
+        alert(
+            "Escolha uma localização."
+        );
+
+        return;
+
+    }
+
+
+    const artigos =
+        dadosCSVChefe.filter(
+            function(item) {
+
+                return (
+                    item.localizacao ===
+                    local
+                );
+
+            }
+        );
+
+
+    if (!artigos.length) {
+
+        alert(
+            "Não existem artigos para esta localização."
+        );
+
+        return;
+
+    }
+
+
+    const csvFuncionario =
+        criarCSVFuncionarioParaQR(
+            artigos
+        );
+
+
+    const base64 =
+        btoa(
+            unescape(
+                encodeURIComponent(
+                    csvFuncionario
+                )
+            )
+        );
+
+
+    const payload =
+        "INVENTARIO|1|" +
+        base64;
+
+
+    const area =
+        document.getElementById(
+            "area-qrcode"
+        );
+
+
+    const qr =
+        document.getElementById(
+            "qrcode"
+        );
+
+
+    const texto =
+        document.getElementById(
+            "texto-qrcode"
+        );
+
+
+    qr.innerHTML = "";
+
+
+    try {
+
+        new QRCode(
+
+            qr,
+
+            {
+
+                text:
+                    payload,
+
+                width:
+                    280,
+
+                height:
+                    280,
+
+                correctLevel:
+                    QRCode.CorrectLevel.L
+
+            }
+
+        );
+
+
+    } catch (erro) {
+
+        console.error(
+            erro
+        );
+
+
+        alert(
+
+            "Não foi possível criar o QR Code.\n\n" +
+
+            "A lista provavelmente é demasiado grande para caber num QR Code."
+
+        );
+
+        return;
+
+    }
+
+
+    texto.innerText =
+
+        "Localização: " +
+        local +
+
+        " | Artigos: " +
+        artigos.length;
+
+
+    area.style.display =
+        "block";
+
+
     /*
-    ============================================================
-    EXECUTAR VARREDURA
-    ============================================================
+    AVISO PARA QR GRANDE
     */
 
-    function executarVarredura() {
+    if (payload.length > 2800) {
 
-        let divergencias = 0;
+        alert(
 
+            "ATENÇÃO:\n\n" +
 
-        dadosAuditoria.forEach(
-            function(item, index) {
+            "Esta lista é grande para um QR Code.\n\n" +
 
-                const original =
-                    stockOriginal.find(
-                        function(stock) {
+            "O QR pode não ser lido por alguns telemóveis."
 
-                            return (
-                                stock.artigo ===
-                                item.artigo
-                            );
+        );
 
-                        }
-                    );
+    }
+
+}
 
 
-                const tr =
-                    document.getElementById(
-                        "linha-auditoria-" +
-                        index
-                    );
+/*
+============================================================
+CRIAR CSV DO FUNCIONÁRIO
+============================================================
+*/
+
+function criarCSVFuncionarioParaQR(
+    artigos
+) {
+
+    let csv =
+        "LOCALIZAÇÃO;ARTIGO;DESCRIÇÃO\n";
 
 
-                if (!original) {
+    artigos.forEach(
+        function(item) {
 
-                    divergencias++;
+            csv +=
+
+                '"' +
+                escaparCSV(
+                    item.localizacao
+                ) +
+                '";"' +
+
+                escaparCSV(
+                    item.artigo
+                ) +
+                '";"' +
+
+                escaparCSV(
+                    item.descricao
+                ) +
+
+                '"\n';
+
+        }
+    );
 
 
-                    tr.classList.add(
-                        "linha-erro"
-                    );
+    return csv;
+
+}
 
 
-                    tr.children[2]
-                        .innerText =
-                        "ARTIGO NÃO ENCONTRADO";
+/*
+============================================================
+IMPRIMIR QR
+============================================================
+*/
+
+function imprimirQRCode() {
+
+    const local =
+        document
+            .getElementById(
+                "localizacao-chefe"
+            )
+            .value;
 
 
-                    tr.children[4]
-                        .innerText =
-                        "NÃO ENCONTRADO";
+    const qrHTML =
+        document
+            .getElementById(
+                "qrcode"
+            )
+            .innerHTML;
 
 
-                    return;
+    const janela =
+        window.open(
+            "",
+            "_blank"
+        );
+
+
+    if (!janela) {
+
+        alert(
+            "O navegador bloqueou a janela de impressão."
+        );
+
+        return;
+
+    }
+
+
+    janela.document.write(`
+
+        <!DOCTYPE html>
+
+        <html lang="pt">
+
+        <head>
+
+            <meta charset="UTF-8">
+
+            <title>
+                QR Code - ${escaparHTML(local)}
+            </title>
+
+            <style>
+
+                body {
+
+                    font-family:
+                        Arial,
+                        sans-serif;
+
+                    text-align:
+                        center;
+
+                    padding:
+                        30px;
 
                 }
 
+                #qr img {
 
-                const diferenca =
-                    item.qtdContada -
-                    original.quantidade;
+                    margin:
+                        20px auto;
+
+                }
+
+            </style>
+
+        </head>
+
+
+        <body>
+
+            <h2>
+                Contagem de Inventário
+            </h2>
+
+            <h3>
+                ${escaparHTML(local)}
+            </h3>
+
+            <div id="qr">
+                ${qrHTML}
+            </div>
+
+            <p>
+                Leia este QR Code com o telemóvel do funcionário.
+            </p>
+
+
+            <script>
+
+                window.onload =
+                    function() {
+
+                        window.print();
+
+                    };
+
+            <\/script>
+
+        </body>
+
+        </html>
+
+    `);
+
+
+    janela.document.close();
+
+}
+
+
+/*
+============================================================
+AUDITORIA
+============================================================
+*/
+
+function carregarAuditoria() {
+
+    const rua =
+        document
+            .getElementById(
+                "nome-rua-chefe"
+            )
+            .value
+            .trim();
+
+
+    if (!rua) {
+
+        alert(
+            "Digite a identificação da contagem."
+        );
+
+        return;
+
+    }
+
+
+    ruaAuditoriaAtual =
+        rua;
+
+
+    const chave =
+        "resultado_" +
+        rua;
+
+
+    const resultadoSalvo =
+        localStorage.getItem(
+            chave
+        );
+
+
+    if (!resultadoSalvo) {
+
+        alert(
+
+            "Não existe uma contagem guardada neste navegador."
+
+        );
+
+        return;
+
+    }
+
+
+    const dados =
+        JSON.parse(
+            resultadoSalvo
+        );
+
+
+    dadosAuditoria =
+        converterCSVResultado(
+            dados.csv
+        );
+
+
+    mostrarPainelAuditoria();
+
+}
+
+
+/*
+============================================================
+PAINEL AUDITORIA
+============================================================
+*/
+
+function mostrarPainelAuditoria() {
+
+    document
+        .getElementById(
+            "painel-auditoria"
+        )
+        .style.display =
+            "block";
+
+
+    document
+        .getElementById(
+            "rua-auditoria"
+        )
+        .innerText =
+            ruaAuditoriaAtual;
+
+
+    document
+        .getElementById(
+            "total-artigos"
+        )
+        .innerText =
+            dadosAuditoria.length;
+
+
+    document
+        .getElementById(
+            "total-divergencias"
+        )
+        .innerText =
+            "-";
+
+
+    document
+        .getElementById(
+            "estado-auditoria"
+        )
+        .innerText =
+            "ENVIADO";
+
+
+    const tbody =
+        document.getElementById(
+            "linhas-auditoria"
+        );
+
+
+    tbody.innerHTML = "";
+
+
+    dadosAuditoria.forEach(
+        function(item, index) {
+
+            const tr =
+                document.createElement(
+                    "tr"
+                );
+
+
+            tr.id =
+                "linha-auditoria-" +
+                index;
+
+
+            tr.innerHTML = `
+
+                <td>
+                    <b>
+                        ${escaparHTML(item.artigo)}
+                    </b>
+                </td>
+
+                <td>
+                    ${escaparHTML(item.descricao)}
+                </td>
+
+                <td style="text-align:center;">
+                    —
+                </td>
+
+                <td style="text-align:center;font-weight:bold;">
+                    ${item.qtdContada}
+                </td>
+
+                <td style="text-align:center;">
+                    —
+                </td>
+
+            `;
+
+
+            tbody.appendChild(
+                tr
+            );
+
+        }
+    );
+
+
+    document
+        .getElementById(
+            "btn-varredura"
+        )
+        .style.display =
+            "block";
+
+
+    document
+        .getElementById(
+            "btn-validar"
+        )
+        .style.display =
+            "none";
+
+
+    document
+        .getElementById(
+            "btn-eliminar"
+        )
+        .style.display =
+            "none";
+
+}
+
+
+/*
+============================================================
+CONVERTER RESULTADO
+============================================================
+*/
+
+function converterCSVResultado(
+    texto
+) {
+
+    const linhas =
+        texto
+            .replace(/\r/g, "")
+            .split("\n")
+            .filter(
+                linha =>
+                    linha.trim() !== ""
+            );
+
+
+    if (linhas.length < 2) {
+        return [];
+    }
+
+
+    const separador =
+        detectarSeparador(
+            linhas[0]
+        );
+
+
+    const resultado = [];
+
+
+    for (
+        let i = 1;
+        i < linhas.length;
+        i++
+    ) {
+
+        const colunas =
+            separarCSV(
+                linhas[i],
+                separador
+            );
+
+
+        if (
+            colunas.length < 4
+        ) {
+            continue;
+        }
+
+
+        resultado.push({
+
+            localizacao:
+                limparCSV(
+                    colunas[0]
+                ),
+
+            artigo:
+                limparCSV(
+                    colunas[1]
+                ),
+
+            descricao:
+                limparCSV(
+                    colunas[2]
+                ),
+
+            qtdContada:
+                Number(
+                    limparCSV(
+                        colunas[3]
+                    )
+                ) || 0
+
+        });
+
+    }
+
+
+    return resultado;
+
+}
+
+
+/*
+============================================================
+VARREDURA
+============================================================
+*/
+
+function executarVarredura() {
+
+    /*
+    Para fazer a comparação real, o chefe precisa
+    ter carregado o CSV original nesta sessão.
+    */
+
+    if (!dadosCSVChefe.length) {
+
+        alert(
+
+            "Carregue primeiro o CSV original do inventário."
+
+        );
+
+        return;
+
+    }
+
+
+    let divergencias = 0;
+
+
+    dadosAuditoria.forEach(
+        function(item, index) {
+
+            const original =
+                dadosCSVChefe.find(
+                    function(stock) {
+
+                        return (
+                            stock.artigo ===
+                            item.artigo
+                        );
+
+                    }
+                );
+
+
+            const tr =
+                document.getElementById(
+                    "linha-auditoria-" +
+                    index
+                );
+
+
+            if (!original) {
+
+                divergencias++;
+
+
+                tr.classList.add(
+                    "linha-erro"
+                );
 
 
                 tr.children[2]
                     .innerText =
-                    original.quantidade;
+                        "ARTIGO NÃO ENCONTRADO";
 
 
                 tr.children[4]
                     .innerText =
+                        "NÃO ENCONTRADO";
+
+
+                return;
+
+            }
+
+
+            const diferenca =
+                item.qtdContada -
+                original.quantidade;
+
+
+            tr.children[2]
+                .innerText =
+                    original.quantidade;
+
+
+            tr.children[4]
+                .innerText =
+
                     diferenca > 0
                         ? "+" + diferenca
                         : diferenca;
 
 
-                if (diferenca === 0) {
+            if (
+                diferenca === 0
+            ) {
 
-                    tr.classList.add(
-                        "linha-certa"
-                    );
+                tr.classList.add(
+                    "linha-certa"
+                );
 
-                } else {
+            } else {
 
-                    tr.classList.add(
-                        "linha-erro"
-                    );
+                tr.classList.add(
+                    "linha-erro"
+                );
 
-                    divergencias++;
-
-                }
+                divergencias++;
 
             }
+
+        }
+    );
+
+
+    document
+        .getElementById(
+            "total-divergencias"
+        )
+        .innerText =
+            divergencias;
+
+
+    document
+        .getElementById(
+            "btn-varredura"
+        )
+        .style.display =
+            "none";
+
+
+    document
+        .getElementById(
+            "btn-validar"
+        )
+        .style.display =
+            "block";
+
+}
+
+
+/*
+============================================================
+VALIDAR
+============================================================
+*/
+
+function validarAuditoria() {
+
+    const confirmar =
+        confirm(
+            "Confirma que esta contagem foi validada?"
         );
 
 
-        document
-            .getElementById(
-                "total-divergencias"
-            )
-            .innerText =
-                divergencias;
-
-
-        document
-            .getElementById(
-                "btn-varredura"
-            )
-            .style.display = "none";
-
-
-        document
-            .getElementById(
-                "btn-validar"
-            )
-            .style.display = "block";
-
+    if (!confirmar) {
+        return;
     }
 
 
-    /*
-    ============================================================
-    VALIDAR
-    ============================================================
-    */
-
-    function validarAuditoria() {
-
-        const confirmar =
-            confirm(
-                "Confirma que esta contagem foi validada?"
-            );
+    const chave =
+        "resultado_" +
+        ruaAuditoriaAtual;
 
 
-        if (!confirmar) {
-            return;
-        }
-
-
-        const chave =
-            "resultado_" +
-            ruaAuditoriaAtual;
-
-
-        const resultado =
-            JSON.parse(
-                localStorage.getItem(
-                    chave
-                )
-            );
-
-
-        resultado.estado =
-            "VALIDADO";
-
-
-        resultado.dataValidacao =
-            new Date().toISOString();
-
-
-        localStorage.setItem(
-            chave,
-            JSON.stringify(resultado)
-        );
-
-
-        document
-            .getElementById(
-                "estado-auditoria"
-            )
-            .innerText =
-                "VALIDADO";
-
-
-        document
-            .getElementById(
-                "btn-validar"
-            )
-            .style.display = "none";
-
-
-        document
-            .getElementById(
-                "btn-eliminar"
-            )
-            .style.display = "block";
-
-
-        alert(
-            "✅ Contagem validada."
-        );
-
-    }
-
-
-    /*
-    ============================================================
-    EXCLUIR RESULTADO
-    ============================================================
-    */
-
-    function eliminarResultado() {
-
-        const confirmar =
-            confirm(
-                "ATENÇÃO!\n\n" +
-                "Tem certeza que deseja excluir " +
-                "o resultado desta rua?\n\n" +
-                "Esta operação não poderá ser desfeita."
-            );
-
-
-        if (!confirmar) {
-            return;
-        }
-
-
-        const chave =
-            "resultado_" +
-            ruaAuditoriaAtual;
-
-
-        localStorage.removeItem(
+    const guardado =
+        localStorage.getItem(
             chave
         );
 
 
-        localStorage.removeItem(
-            "finalizado_" +
-            ruaAuditoriaAtual
-        );
-
-
-        document
-            .getElementById(
-                "painel-auditoria"
-            )
-            .style.display = "none";
-
-
-        document
-            .getElementById(
-                "linhas-auditoria"
-            )
-            .innerHTML = "";
-
+    if (!guardado) {
 
         alert(
-            "🗑️ Resultado eliminado."
+            "Resultado não encontrado."
         );
+
+        return;
 
     }
 
 
-    /*
-    ============================================================
-    DETECTAR SEPARADOR
-    ============================================================
-    */
-
-    function detectarSeparador(
-        linha
-    ) {
-
-        const pontoVirgula =
-            (linha.match(/;/g) || [])
-                .length;
+    const resultado =
+        JSON.parse(
+            guardado
+        );
 
 
-        const virgula =
-            (linha.match(/,/g) || [])
-                .length;
+    resultado.estado =
+        "VALIDADO";
 
 
-        return pontoVirgula >= virgula
+    resultado.dataValidacao =
+        new Date().toISOString();
+
+
+    localStorage.setItem(
+
+        chave,
+
+        JSON.stringify(
+            resultado
+        )
+
+    );
+
+
+    document
+        .getElementById(
+            "estado-auditoria"
+        )
+        .innerText =
+            "VALIDADO";
+
+
+    document
+        .getElementById(
+            "btn-validar"
+        )
+        .style.display =
+            "none";
+
+
+    document
+        .getElementById(
+            "btn-eliminar"
+        )
+        .style.display =
+            "block";
+
+
+    alert(
+        "✅ Contagem validada."
+    );
+
+}
+
+
+/*
+============================================================
+ELIMINAR
+============================================================
+*/
+
+function eliminarResultado() {
+
+    const confirmar =
+        confirm(
+
+            "ATENÇÃO!\n\n" +
+            "Tem certeza que deseja excluir o resultado?\n\n" +
+            "Esta operação não poderá ser desfeita."
+
+        );
+
+
+    if (!confirmar) {
+        return;
+    }
+
+
+    const chave =
+        "resultado_" +
+        ruaAuditoriaAtual;
+
+
+    localStorage.removeItem(
+        chave
+    );
+
+
+    document
+        .getElementById(
+            "painel-auditoria"
+        )
+        .style.display =
+            "none";
+
+
+    document
+        .getElementById(
+            "linhas-auditoria"
+        )
+        .innerHTML =
+            "";
+
+
+    alert(
+        "🗑️ Resultado eliminado."
+    );
+
+}
+
+
+/*
+============================================================
+CSV
+============================================================
+*/
+
+function detectarSeparador(
+    linha
+) {
+
+    const pontoVirgula =
+        (
+            linha.match(
+                /;/g
+            ) || []
+        ).length;
+
+
+    const virgula =
+        (
+            linha.match(
+                /,/g
+            ) || []
+        ).length;
+
+
+    return
+        pontoVirgula >= virgula
             ? ";"
             : ",";
 
-    }
+}
 
 
-    /*
-    ============================================================
-    SEPARAR CSV
-    ============================================================
-    */
+function separarCSV(
+    linha,
+    separador
+) {
 
-    function separarCSV(
-        linha,
-        separador
+    const resultado = [];
+
+    let campo = "";
+
+    let dentroAspas = false;
+
+
+    for (
+        let i = 0;
+        i < linha.length;
+        i++
     ) {
 
-        const resultado = [];
-
-        let campo = "";
-
-        let dentroAspas = false;
+        const caractere =
+            linha[i];
 
 
-        for (
-            let i = 0;
-            i < linha.length;
-            i++
+        if (
+            caractere === '"'
         ) {
-
-            const caractere =
-                linha[i];
-
 
             if (
-                caractere === '"'
+
+                dentroAspas &&
+                linha[i + 1] === '"'
+
             ) {
 
-                if (
-                    dentroAspas &&
-                    linha[i + 1] === '"'
-                ) {
+                campo += '"';
 
-                    campo += '"';
+                i++;
 
-                    i++;
+            } else {
 
-                } else {
-
-                    dentroAspas =
-                        !dentroAspas;
-
-                }
-
-            }
-
-            else if (
-                caractere === separador &&
-                !dentroAspas
-            ) {
-
-                resultado.push(
-                    campo
-                );
-
-                campo = "";
-
-            }
-
-            else {
-
-                campo +=
-                    caractere;
+                dentroAspas =
+                    !dentroAspas;
 
             }
 
         }
 
+        else if (
 
-        resultado.push(
-            campo
-        );
+            caractere === separador &&
+            !dentroAspas
 
+        ) {
 
-        return resultado;
+            resultado.push(
+                campo
+            );
+
+            campo = "";
+
+        }
+
+        else {
+
+            campo +=
+                caractere;
+
+        }
 
     }
 
 
-    /*
-    ============================================================
-    LIMPAR CSV
-    ============================================================
-    */
+    resultado.push(
+        campo
+    );
 
-    function limparCSV(
-        valor
+
+    return resultado;
+
+}
+
+
+function limparCSV(
+    valor
+) {
+
+    if (
+        valor === undefined ||
+        valor === null
     ) {
 
-        if (
-            valor === undefined ||
-            valor === null
-        ) {
+        return "";
 
-            return "";
+    }
 
-        }
 
+    valor =
+        String(valor).trim();
+
+
+    if (
+
+        valor.startsWith('"') &&
+        valor.endsWith('"')
+
+    ) {
 
         valor =
-            String(valor).trim();
+            valor.substring(
+                1,
+                valor.length - 1
+            );
+
+    }
 
 
-        if (
-            valor.startsWith('"') &&
-            valor.endsWith('"')
-        ) {
+    return valor.replace(
+        /""/g,
+        '"'
+    );
 
-            valor =
-                valor.substring(
-                    1,
-                    valor.length - 1
-                );
-
-        }
+}
 
 
-        return valor.replace(
-            /""/g,
-            '"'
+function escaparCSV(
+    valor
+) {
+
+    return String(valor)
+        .replace(
+            /"/g,
+            '""'
+        );
+
+}
+
+
+function escaparHTML(
+    valor
+) {
+
+    return String(valor)
+
+        .replace(
+            /&/g,
+            "&amp;"
+        )
+
+        .replace(
+            /</g,
+            "&lt;"
+        )
+
+        .replace(
+            />/g,
+            "&gt;"
+        )
+
+        .replace(
+            /"/g,
+            "&quot;"
+        )
+
+        .replace(
+            /'/g,
+            "&#039;"
+        );
+
+}
+
+
+/*
+============================================================
+DOWNLOAD
+============================================================
+*/
+
+function baixarCSV(
+    conteudo,
+    nomeArquivo
+) {
+
+    const blob =
+        new Blob(
+
+            [conteudo],
+
+            {
+                type:
+                    "text/csv;charset=utf-8;"
+            }
+
+        );
+
+
+    const url =
+        URL.createObjectURL(
+            blob
+        );
+
+
+    const link =
+        document.createElement(
+            "a"
+        );
+
+
+    link.href =
+        url;
+
+
+    link.download =
+        nomeArquivo;
+
+
+    document
+        .body
+        .appendChild(
+            link
+        );
+
+
+    link.click();
+
+
+    document
+        .body
+        .removeChild(
+            link
+        );
+
+
+    URL.revokeObjectURL(
+        url
+    );
+
+}
+
+
+/*
+============================================================
+NOME RESULTADO
+============================================================
+*/
+
+function gerarNomeArquivoResultado() {
+
+    const data =
+        new Date()
+            .toISOString()
+            .slice(
+                0,
+                10
+            );
+
+
+    const rua =
+        identificadorRua
+            .toLowerCase()
+            .replace(
+                /\s+/g,
+                "_"
+            )
+            .replace(
+                /[^a-z0-9_-]/g,
+                ""
+            );
+
+
+    return (
+
+        rua +
+        "_" +
+        data +
+        "_contagem.csv"
+
+    );
+
+}
+
+
+/*
+============================================================
+MENSAGEM
+============================================================
+*/
+
+function mostrarMensagemFuncionario(
+    texto,
+    tipo
+) {
+
+    const elemento =
+        document.getElementById(
+            "mensagem-funcionario"
+        );
+
+
+    elemento.className =
+        "mensagem";
+
+
+    elemento.innerText =
+        texto;
+
+
+    if (texto) {
+
+        elemento.classList.add(
+            tipo
         );
 
     }
 
-
-    /*
-    ============================================================
-    ESCAPAR CSV
-    ============================================================
-    */
-
-    function escaparCSV(
-        valor
-    ) {
-
-        return String(valor)
-            .replace(
-                /"/g,
-                '""'
-            );
-
-    }
-
-
-    /*
-    ============================================================
-    ESCAPAR HTML
-    ============================================================
-    */
-
-    function escaparHTML(
-        valor
-    ) {
-
-        return String(valor)
-            .replace(
-                /&/g,
-                "&amp;"
-            )
-            .replace(
-                /</g,
-                "&lt;"
-            )
-            .replace(
-                />/g,
-                "&gt;"
-            )
-            .replace(
-                /"/g,
-                "&quot;"
-            )
-            .replace(
-                /'/g,
-                "&#039;"
-            );
-
-    }
-
-
-    /*
-    ============================================================
-    DOWNLOAD CSV
-    ============================================================
-    */
-
-    function baixarCSV(
-        conteudo,
-        nomeArquivo
-    ) {
-
-        const blob =
-            new Blob(
-                [conteudo],
-                {
-                    type:
-                        "text/csv;charset=utf-8;"
-                }
-            );
-
-
-        const url =
-            URL.createObjectURL(
-                blob
-            );
-
-
-        const link =
-            document.createElement(
-                "a"
-            );
-
-
-        link.href =
-            url;
-
-
-        link.download =
-            nomeArquivo;
-
-
-        document
-            .body
-            .appendChild(
-                link
-            );
-
-
-        link.click();
-
-
-        document
-            .body
-            .removeChild(
-                link
-            );
-
-
-        URL.revokeObjectURL(
-            url
-        );
-
-    }
-
-
-    /*
-    ============================================================
-    NOME DO ARQUIVO
-    ============================================================
-    */
-
-    function gerarNomeArquivoResultado() {
-
-        const data =
-            new Date()
-                .toISOString()
-                .slice(
-                    0,
-                    10
-                );
-
-
-        const rua =
-            identificadorRua
-                .toLowerCase()
-                .replace(
-                    /\s+/g,
-                    "_"
-                )
-                .replace(
-                    /[^a-z0-9_-]/g,
-                    ""
-                );
-
-
-        return (
-            rua +
-            "_" +
-            data +
-            "_contagem.csv"
-        );
-
-    }
-
-
-    /*
-    ============================================================
-    MENSAGEM FUNCIONÁRIO
-    ============================================================
-    */
-
-    function mostrarMensagemFuncionario(
-        texto,
-        tipo
-    ) {
-
-        const elemento =
-            document.getElementById(
-                "mensagem-funcionario"
-            );
-
-
-        elemento.className =
-            "mensagem";
-
-
-        elemento.innerText =
-            texto;
-
-
-        if (texto) {
-
-            elemento.classList.add(
-                tipo
-            );
-
-        }
-
-    }
+}
 
 </script>
 
 </body>
 </html>
-
